@@ -1,19 +1,24 @@
 from pydantic_settings import BaseSettings
-from pydantic import BaseModel
+from pydantic import BaseModel, PostgresDsn
+
 
 class RunCongig(BaseModel):
-    host:str =  "0.0.0.0"
+    host: str = "0.0.0.0"
     port: int = 8000
 
+
 class PrefixApi(BaseModel):
-    apiPrefix:str = '/api'
+    apiPrefix: str = "/api"
 
 
+class DBConfig(BaseModel):
+    url = PostgresDsn
 
 
 class Settings(BaseSettings):
-    run:RunCongig = RunCongig()
-    prefix:PrefixApi = PrefixApi()
+    run: RunCongig = RunCongig()
+    prefix: PrefixApi = PrefixApi()
+    db: DBConfig
 
 
 settings = Settings()
