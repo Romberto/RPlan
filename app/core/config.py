@@ -13,6 +13,11 @@ class PrefixApi(BaseModel):
 
 class DBConfig(BaseModel):
     url = PostgresDsn
+    test_url = PostgresDsn
+    echo: bool = (False,)
+    echo_pool: bool = (False,)
+    max_overflow: int = (10,)
+    pool_size: int = (5,)
 
 
 class Settings(BaseSettings):
