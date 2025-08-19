@@ -2,9 +2,9 @@ from sys import prefix
 
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/test")
+router = APIRouter(prefix="/tests")
 
 
 @router.get("/new")
 async def testing_router():
-    pass
+    return {"message": "success"}

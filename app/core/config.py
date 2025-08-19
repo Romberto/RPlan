@@ -3,7 +3,7 @@ from pydantic import BaseModel, PostgresDsn
 
 
 class RunCongig(BaseModel):
-    host: str = "0.0.0.0"
+    host: str = "localhost"
     port: int = 8000
 
 
