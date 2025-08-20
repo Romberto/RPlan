@@ -45,10 +45,11 @@ async def test_get_my_project_invalid(client: AsyncClient, user_id, status_code)
     response = await client.get(f"/my_projects/{user_id}")
     assert response.status_code == status_code
 
-async def test_get_project_by_project_name(client:AsyncClient, init_db):
+
+async def test_get_project_by_project_name(client: AsyncClient, init_db):
     _init_db = init_db
-    project_name = _init_db['projects'][0].project_name
-    response = await client.get(f'/project/{project_name}')
+    project_name = _init_db["projects"][0].project_name
+    response = await client.get(f"/project/{project_name}")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert UUID(data['id']) == _init_db['projects'][0].id
+    assert UUID(data["id"]) == _init_db["projects"][0].id

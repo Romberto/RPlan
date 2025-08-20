@@ -12,6 +12,7 @@ class PhotoRead(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class ProjectRead(BaseModel):
     id: UUID
     project_name: str
@@ -23,6 +24,12 @@ class ProjectRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ProjectCreate(BaseModel):
+    project_name: str
+    comments: Optional[str] = None
+    photos: Optional[list[PhotoRead]] = []
+
+
 class ProjectReadAll(BaseModel):
-    projects: list[ProjectRead]=[]
+    projects: list[ProjectRead] = []
     total: int
