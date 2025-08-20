@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.pool.impl import NullPool
 
+from app.api.utils.jwt_utils import get_current_user
 from app.core.config import settings
 from app.core.models import Projects
 from app.core.models.base import Base
@@ -149,3 +150,16 @@ async def client():
         transport=ASGITransport(my_app), base_url=BASE_URL_DISH
     ) as ac:
         yield ac
+
+
+@pytest.fixture(autouse=True)
+async def override_current_user(session: AsyncSession):
+    async def _override():
+        user = Users(username="test_admin_init23", role=Role.admin)
+        session.add(user)
+        await session.commit()
+        return user
+
+    my_app.dependency_overrides[get_current_user] = _override
+    yield
+    my_app.dependency_overrides.clear()

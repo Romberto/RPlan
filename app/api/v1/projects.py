@@ -13,7 +13,6 @@ from app.core.models import Projects, Users
 from app.core.models.db_helper import DataBaseHelper
 from app.shemas.products import ProjectReadAll, ProjectRead, ProjectCreate
 from app.shemas.user import Role
-from app.tests.conftest import init_db
 
 router = APIRouter(tags=["Projects"])
 

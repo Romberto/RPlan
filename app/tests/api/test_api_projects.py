@@ -1,15 +1,18 @@
+
 from pprint import pprint
 from uuid import UUID
 
 import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient
+from pydantic_core import ValidationError
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import count
 from starlette import status
-
+from contextlib import nullcontext as not_raise_exc
 from app.core.models import Projects
+from app.shemas.products import ProjectCreate
 
 
 async def test_all_projects(
@@ -53,3 +56,25 @@ async def test_get_project_by_project_name(client: AsyncClient, init_db):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert UUID(data["id"]) == _init_db["projects"][0].id
+
+
+
+@pytest.mark.parametrize(
+    "project_name, exc", [
+        ("valid_product_name", not_raise_exc()),
+        (12345, pytest.raises(ValidationError))
+        ]
+    )
+async def test_add_project(session: AsyncSession, init_db, client: AsyncClient , project_name, exc):
+    with exc:
+        data = ProjectCreate(project_name=project_name, comments="", photos=[])
+        stmt_start = select(func.count()).select_from(Projects)
+        result_start = await session.execute(stmt_start)
+        start_count = result_start.scalar_one()
+        response = await client.post("/add_project", json=data.model_dump())
+        assert response.status_code == status.HTTP_200_OK
+        stmt_end = select(func.count()).select_from(Projects)
+        result_end = await session.execute(stmt_end)
+        end_count = result_end.scalar_one()
+        assert start_count == end_count - 1
+
