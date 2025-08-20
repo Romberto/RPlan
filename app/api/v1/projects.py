@@ -82,3 +82,7 @@ async def all_project(
             detail=f"Unexpected error: {str(e)}",
         )
     return {"projects": projects, "total": total}
+
+@router.get('/project/{project_id}')
+async def get_project_by_id(progect_id:str):
+    pass
