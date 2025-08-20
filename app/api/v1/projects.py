@@ -6,6 +6,7 @@ from fastapi.params import Depends, Query
 from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from starlette import status
 
 from app.core.models import Projects
@@ -35,6 +36,12 @@ async def get_my_project(
             .where(Projects.user_id == user_uuid)
             .offset(skip)
             .limit(limit)
+            .options(
+                selectinload(
+                    Projects.photos
+                ),  # подтягиваем все фотографии одним запросом
+                selectinload(Projects.user),  # подтягиваем пользователя одним запросом
+            )
         )
         my_project_result = await session.execute(my_project_stmt)
         my_projects = my_project_result.scalars().all()
@@ -65,7 +72,17 @@ async def all_project(
     limit: int = Query(10, ge=1, le=100),
 ):
     try:
-        stmt = select(Projects).offset(skip).limit(limit)
+        stmt = (
+            select(Projects)
+            .offset(skip)
+            .limit(limit)
+            .options(
+                selectinload(
+                    Projects.photos
+                ),  # подтягиваем все фотографии одним запросом
+                selectinload(Projects.user),  # подтягиваем пользователя одним запросом
+            )
+        )
         result = await session.execute(stmt)
         projects = result.scalars().all()
         stmt_total = select(func.count()).select_from(Projects)
@@ -83,6 +100,7 @@ async def all_project(
         )
     return {"projects": projects, "total": total}
 
-@router.get('/project/{project_id}')
-async def get_project_by_id(progect_id:str):
+
+@router.get("/project/{project_id}")
+async def get_project_by_id(progect_id: str):
     pass
