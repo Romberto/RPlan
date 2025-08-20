@@ -1,4 +1,3 @@
-
 from pprint import pprint
 from uuid import UUID
 
@@ -58,14 +57,13 @@ async def test_get_project_by_project_name(client: AsyncClient, init_db):
     assert UUID(data["id"]) == _init_db["projects"][0].id
 
 
-
 @pytest.mark.parametrize(
-    "project_name, exc", [
-        ("valid_product_name", not_raise_exc()),
-        (12345, pytest.raises(ValidationError))
-        ]
-    )
-async def test_add_project(session: AsyncSession, init_db, client: AsyncClient , project_name, exc):
+    "project_name, exc",
+    [("valid_product_name", not_raise_exc()), (12345, pytest.raises(ValidationError))],
+)
+async def test_add_project(
+    session: AsyncSession, init_db, client: AsyncClient, project_name, exc
+):
     with exc:
         data = ProjectCreate(project_name=project_name, comments="", photos=[])
         stmt_start = select(func.count()).select_from(Projects)
@@ -77,4 +75,3 @@ async def test_add_project(session: AsyncSession, init_db, client: AsyncClient ,
         result_end = await session.execute(stmt_end)
         end_count = result_end.scalar_one()
         assert start_count == end_count - 1
-
