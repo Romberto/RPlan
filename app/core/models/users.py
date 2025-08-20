@@ -14,7 +14,7 @@ class Users(Base):
 
     # один пользователь -> много проектов
     projects: Mapped[list["Projects"]] = relationship(
-        "Projects",                       # имя класса в кавычках
+        "Projects",  # имя класса в кавычках
         back_populates="user",
         cascade="all, delete-orphan",
     )

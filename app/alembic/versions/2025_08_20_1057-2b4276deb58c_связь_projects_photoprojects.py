@@ -26,9 +26,7 @@ def upgrade() -> None:
         "photo_projects",
         sa.Column("link", sa.String(length=255), nullable=False),
     )
-    op.add_column(
-        "photo_projects", sa.Column("project_id", sa.UUID(), nullable=False)
-    )
+    op.add_column("photo_projects", sa.Column("project_id", sa.UUID(), nullable=False))
     op.create_foreign_key(
         op.f("fk_photo_projects_project_id_projects"),
         "photo_projects",

@@ -20,10 +20,11 @@ class Projects(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
-    photos:Mapped[list["PhotoProjects"]] = relationship(
-        "PhotoProjects",                       # имя класса в кавычках
+    photos: Mapped[list["PhotoProjects"]] = relationship(
+        "PhotoProjects",  # имя класса в кавычках
         back_populates="project",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     # проект принадлежит одному пользователю
@@ -32,8 +33,14 @@ class Projects(Base):
         back_populates="projects",
     )
 
+
 class PhotoProjects(Base):
     __tablename__ = "photo_projects"
-    link:Mapped[str] = mapped_column(String(255), nullable=False)
-    project_id:Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-    project:Mapped["Projects"] = relationship("Projects", back_populates="photos",)
+    link: Mapped[str] = mapped_column(String(255), nullable=False)
+    project_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    project: Mapped["Projects"] = relationship(
+        "Projects",
+        back_populates="photos",
+    )
