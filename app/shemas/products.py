@@ -29,6 +29,11 @@ class ProjectCreate(BaseModel):
     comments: Optional[str] = None
     photos: Optional[list[PhotoRead]] = []
 
+class ProjectUpdate(BaseModel):
+    project_name: Optional[str]
+    comments: Optional[str]
+    photos: Optional[list[PhotoRead]]
+
 
 class ProjectReadAll(BaseModel):
     projects: list[ProjectRead] = []

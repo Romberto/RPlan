@@ -11,7 +11,7 @@ from starlette import status
 from app.api.utils.jwt_utils import get_current_user
 from app.core.models import Projects, Users
 from app.core.models.db_helper import DataBaseHelper
-from app.shemas.products import ProjectReadAll, ProjectRead, ProjectCreate
+from app.shemas.products import ProjectReadAll, ProjectRead, ProjectCreate, ProjectUpdate
 from app.shemas.user import Role
 
 router = APIRouter(tags=["Projects"])
@@ -113,4 +113,34 @@ async def add_project(
             status_code=status.HTTP_403_FORBIDDEN,
         )
 
+    return project
+
+@router.patch("/project/{project_name}", response_model=ProjectRead)
+async def update_project(data: ProjectUpdate, project_name: str, session:AsyncSession = Depends(DataBaseHelper.session_getter), user:Users = Depends(get_current_user)):
+    stmt_project = select(Projects).where(Projects.project_name == project_name)
+    result_project = await session.execute(stmt_project)
+    project = result_project.scalar_one()
+    if user.id != project.user_id:
+        raise HTTPException(
+            detail="You don't have permission to access this resource.",
+            status_code=status.HTTP_403_FORBIDDEN
+            )
+
+    stmt = select(Projects).where(Projects.project_name == project_name)
+    result = await session.execute(stmt)
+    project = result.scalars().first()
+
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found."
+        )
+
+    # Обновляем только переданные поля
+    update_data = data.model_dump(exclude_unset=True, mode="json")
+    for field, value in update_data.items():
+        setattr(project, field, value)
+
+    await session.commit()
+    await session.refresh(project)
     return project
