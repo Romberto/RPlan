@@ -5,6 +5,7 @@ from pydantic import BaseModel, PostgresDsn
 class RunCongig(BaseModel):
     host: str = "localhost"
     port: int = 8000
+    debug: int = 1
 
 
 class PrefixApi(BaseModel):

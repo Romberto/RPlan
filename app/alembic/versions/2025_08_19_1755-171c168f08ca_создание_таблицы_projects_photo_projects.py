@@ -44,9 +44,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_projects")),
-        sa.UniqueConstraint(
-            "project_name", name=op.f("uq_projects_project_name")
-        ),
+        sa.UniqueConstraint("project_name", name=op.f("uq_projects_project_name")),
     )
     # ### end Alembic commands ###
 

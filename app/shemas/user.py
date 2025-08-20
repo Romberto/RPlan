@@ -5,7 +5,7 @@ from pydantic import BaseModel, constr
 
 
 class Role(str, Enum):
-    user = ("user",)
+    user = "user"
     admin = "admin"
 
 
