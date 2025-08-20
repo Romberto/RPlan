@@ -103,7 +103,7 @@ async def create_photo_projects(session: AsyncSession, create_projects):
     await session.commit()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 async def init_db(session: AsyncSession):
     user = Users(username="test_user_init", role=Role.user)
     admin = Users(username="test_admin_init", role=Role.admin)

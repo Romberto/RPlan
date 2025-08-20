@@ -1,4 +1,4 @@
-from sys import prefix
+
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -11,7 +11,7 @@ from starlette import status
 
 from app.core.models import Projects
 from app.core.models.db_helper import DataBaseHelper
-from app.shemas.products import ProjectReadAll
+from app.shemas.products import ProjectReadAll, ProjectRead
 
 router = APIRouter(tags=["Projects"])
 
@@ -101,6 +101,27 @@ async def all_project(
     return {"projects": projects, "total": total}
 
 
-@router.get("/project/{project_id}")
-async def get_project_by_id(progect_id: str):
-    pass
+@router.get("/project/{project_name}", response_model=ProjectRead)
+async def get_project_by_project_name(project_name: str, session:AsyncSession=Depends(DataBaseHelper.session_getter)):
+    try:
+        stmt = (
+            select(Projects)
+            .where(Projects.project_name == project_name)
+            .options(
+                selectinload(Projects.photos)
+                )
+        )
+        result = await session.execute(stmt)
+        project = result.scalars().first()
+    except SQLAlchemyError as e:
+        raise HTTPException(
+            detail=f"Database error: {str(e)}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error: {str(e)}",
+        )
+    return project
